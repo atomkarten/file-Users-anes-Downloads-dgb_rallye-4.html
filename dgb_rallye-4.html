@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WM Digital-Rallye 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#1a7a3c;--gl:#25a854;--gp:#e8f7ee;
+  --gold:#b8860b;--goldl:#daa520;--goldp:#fffaed;
+  --red:#b83232;--redp:#fdecea;
+  --blue:#1a4fa0;--bluep:#e8eef9;
+  --orange:#c45c0a;--orangep:#fff0e6;
+  --purple:#6233a0;--purplep:#f2eeff;
+  --dark:#1a1a1a;--muted:#5a5a5a;--border:#d8d8d8;
+  --bg:#f0f2f0;--white:#fff;
+  --r:14px;--rs:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--dark);font-size:16px;line-height:1.6;min-height:100vh}
+h1,h2,h3{font-family:'Bebas Neue',sans-serif;letter-spacing:1px}
+
+/* ── HEADER ── */
+.hdr{background:var(--g);color:#fff;text-align:center;padding:1.75rem 1rem 1.5rem}
+.hdr h1{font-size:clamp(2rem,6vw,3.2rem);line-height:1}
+.hdr p{opacity:.8;font-size:.9rem;margin-top:5px}
+
+/* ── LAYOUT ── */
+#s-intro,#s-game,#s-win{display:none}
+.wrap{max-width:760px;margin:0 auto;padding:1.5rem 1rem 5rem}
+
+/* ── CARDS ── */
+.card{background:var(--white);border-radius:var(--r);box-shadow:0 2px 14px rgba(0,0,0,.07);padding:1.75rem;margin-bottom:1.25rem}
+
+/* ── BUTTONS ── */
+.btn{padding:11px 22px;border:none;border-radius:var(--rs);font-size:.92rem;font-family:'Bebas Neue',sans-serif;letter-spacing:.8px;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn:active{transform:scale(.97)}
+.btn-g{background:var(--g);color:#fff}.btn-g:hover{background:var(--gl)}
+.btn-out{background:transparent;color:var(--g);border:1.5px solid var(--g)}.btn-out:hover{background:var(--gp)}
+.btn-sm{padding:8px 16px;font-size:.8rem}
+
+/* ── INPUTS ── */
+input[type=text],input[type=number],select,textarea{
+  width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--rs);
+  font-size:.95rem;font-family:'Nunito',sans-serif;outline:none;transition:border-color .2s;background:#fff;color:var(--dark)}
+input:focus,select:focus,textarea:focus{border-color:var(--gl)}
+input.ok{border-color:var(--gl);background:var(--gp)}
+input.err{border-color:var(--red);background:var(--redp)}
+textarea{resize:vertical;min-height:80px}
+
+/* ── INTRO ── */
+.tag-row{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:.78rem;font-weight:700;padding:4px 12px;border-radius:99px}
+.t-g{background:var(--gp);color:var(--g)}
+.t-b{background:var(--bluep);color:var(--blue)}
+.t-o{background:var(--orangep);color:var(--orange)}
+.t-r{background:var(--redp);color:var(--red)}
+.t-p{background:var(--purplep);color:var(--purple)}
+.rules-list{display:flex;flex-direction:column;gap:10px;margin:1rem 0}
+.rule-row{display:flex;gap:12px;align-items:flex-start;font-size:.9rem}
+.rn{background:var(--g);color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.78rem;flex-shrink:0;margin-top:2px}
+
+/* ── PROGRESS ── */
+.prog-wrap{background:var(--white);border-radius:var(--r);box-shadow:0 2px 14px rgba(0,0,0,.07);padding:1.1rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap}
+.prog-info{flex:1;min-width:180px}
+.prog-lbl{font-size:.78rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.prog-bar{background:#e4e4e4;border-radius:99px;height:9px;overflow:hidden}
+.prog-fill{height:100%;background:var(--g);border-radius:99px;transition:width .5s}
+.prog-dots{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.pdot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;border:2px solid var(--border);color:var(--muted);background:#efefef;transition:all .25s}
+.pdot.done{background:var(--gp);border-color:var(--gl);color:var(--g)}
+.pdot.cur{background:var(--g);border-color:var(--g);color:#fff}
+.score-box{text-align:center}
+.score-box .sn{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--g);line-height:1}
+.score-box .sl{font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700}
+
+/* ── LÖSUNGSWORT ── */
+.lw-box{background:var(--goldp);border:2px solid var(--goldl);border-radius:var(--r);padding:.9rem 1.4rem;margin-bottom:1.25rem}
+.lw-box h3{font-family:'Nunito',sans-serif;font-size:.75rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);font-weight:800;margin-bottom:8px}
+.lboxes{display:flex;flex-wrap:wrap;gap:5px}
+.lb{width:38px;height:46px;border:2px solid var(--goldl);border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;position:relative}
+.lb .lc{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--g);line-height:1}
+.lb .li{font-size:.55rem;color:var(--muted);position:absolute;bottom:2px;right:3px}
+.lb.empty .lc{color:transparent}
+.lb.lit{background:var(--gp);border-color:var(--g)}
+
+/* ── STATION CARD ── */
+.sc{background:var(--white);border-radius:var(--r);box-shadow:0 2px 14px rgba(0,0,0,.07);overflow:hidden;margin-bottom:1.25rem;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.sc-head{padding:1.1rem 1.5rem;border-bottom:1px solid #eee;background:var(--bg);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.sc-icon{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.sc-meta{flex:1;min-width:140px}
+.sc-meta .sm-top{font-size:.75rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.sc-meta .sm-title{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;line-height:1.1;color:var(--dark)}
+.lw-badge{display:flex;align-items:center;gap:6px;background:var(--goldp);border:1px solid var(--goldl);border-radius:6px;padding:4px 10px;font-size:.8rem;color:var(--gold);font-weight:800;white-space:nowrap}
+.lw-badge strong{font-size:1.1rem;color:var(--g)}
+
+/* ── STEP DOTS ── */
+.step-dots{display:flex;gap:5px;padding:.75rem 1.5rem .5rem}
+.sdot{flex:1;height:4px;border-radius:99px;background:#e4e4e4;transition:background .3s}
+.sdot.done{background:var(--g)}
+.sdot.cur{background:var(--goldl)}
+
+/* ── STEP BODY ── */
+.sb{padding:.25rem 1.5rem 1.5rem}
+.step-badge{display:inline-block;font-size:.7rem;font-weight:800;padding:2px 10px;border-radius:99px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.step-q{font-size:1rem;font-weight:700;line-height:1.65;margin-bottom:1rem;white-space:pre-wrap}
+
+/* ── AUFGABEN-BOX (echte Laptop-Aufgabe) ── */
+.task-box{border:2px dashed var(--gl);border-radius:var(--rs);padding:1rem 1.25rem;margin-bottom:1rem;background:var(--gp)}
+.task-box .tb-title{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--g);margin-bottom:6px}
+.task-box ol{padding-left:1.2rem;font-size:.9rem;line-height:1.8;color:var(--dark)}
+.task-box ol li{margin-bottom:2px}
+.task-box .tb-note{font-size:.8rem;color:var(--g);font-weight:700;margin-top:8px;padding-top:8px;border-top:1px solid #b2dfc0}
+
+/* ── MC ── */
+.mc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
+@media(max-width:460px){.mc-grid{grid-template-columns:1fr}}
+.mc-opt{padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--rs);background:#fff;cursor:pointer;font-size:.88rem;font-family:'Nunito',sans-serif;text-align:left;transition:all .15s;color:var(--dark);font-weight:600;line-height:1.4}
+.mc-opt:hover:not(:disabled){border-color:var(--gl);background:var(--gp)}
+.mc-opt.ok{border-color:var(--gl);background:var(--gp);color:var(--g)}
+.mc-opt.err{border-color:var(--red);background:var(--redp);color:var(--red)}
+
+/* ── CHECKBOXES ── */
+.cb-list{display:flex;flex-direction:column;gap:7px;margin-bottom:1rem}
+.cb-row{display:flex;align-items:flex-start;gap:10px;padding:9px 13px;border:1.5px solid var(--border);border-radius:var(--rs);cursor:pointer;font-size:.88rem;font-weight:600;transition:all .15s;background:#fff}
+.cb-row:hover{background:var(--gp);border-color:var(--gl)}
+.cb-row input{width:17px;height:17px;flex-shrink:0;margin-top:2px;accent-color:var(--g);cursor:pointer}
+.cb-row.ok{background:var(--gp);border-color:var(--gl)}
+.cb-row.err{background:var(--redp);border-color:var(--red)}
+
+/* ── UPLOAD ── */
+.upload-area{border:2px dashed var(--border);border-radius:var(--rs);padding:1.5rem 1rem;text-align:center;cursor:pointer;transition:all .2s;background:#fafafa;margin-bottom:.75rem;position:relative}
+.upload-area:hover,.upload-area.over{border-color:var(--gl);background:var(--gp)}
+.upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-area .ua-icon{font-size:2rem;margin-bottom:6px}
+.upload-area .ua-text{font-size:.88rem;color:var(--muted);font-weight:600}
+.upload-area .ua-sub{font-size:.75rem;color:var(--muted);margin-top:3px}
+.upload-preview{background:var(--gp);border:1px solid var(--gl);border-radius:var(--rs);padding:10px 14px;font-size:.85rem;font-weight:700;color:var(--g);display:none;align-items:center;gap:8px;margin-bottom:.75rem}
+.upload-preview.show{display:flex}
+.upload-preview img{max-height:80px;border-radius:5px;max-width:120px;object-fit:cover}
+
+/* ── FEEDBACK ── */
+.fb{padding:10px 14px;border-radius:var(--rs);font-size:.88rem;font-weight:700;margin-top:8px;display:none}
+.fb.show{display:block}
+.fb.ok{background:var(--gp);color:var(--g)}
+.fb.err{background:var(--redp);color:var(--red)}
+
+/* ── HINT ── */
+.hint-box{background:var(--bluep);border-left:3px solid var(--blue);padding:9px 13px;font-size:.84rem;color:var(--blue);font-weight:600;margin-bottom:.75rem;display:none;border-radius:0 var(--rs) var(--rs) 0}
+.hint-box.show{display:block}
+.hint-btn{background:none;border:1px solid var(--blue);color:var(--blue);border-radius:6px;padding:5px 13px;font-size:.78rem;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;margin-top:8px;transition:background .15s}
+.hint-btn:hover{background:var(--bluep)}
+
+/* ── WIN ── */
+.win-card{background:#fff;border-radius:var(--r);box-shadow:0 2px 14px rgba(0,0,0,.07);padding:2.5rem 2rem;text-align:center;margin-bottom:1.5rem}
+.win-card h2{font-size:3rem;color:var(--g);margin-bottom:.25rem}
+.win-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:1.5rem 0}
+.wstat{background:var(--bg);border-radius:var(--rs);padding:.9rem .5rem;text-align:center}
+.wstat .wsn{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--g)}
+.wstat .wsl{font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700}
+.sol-box{background:var(--g);color:#fff;border-radius:var(--r);padding:1.5rem;margin:1.25rem 0}
+.sol-box p{font-size:.85rem;opacity:.8;margin-bottom:6px}
+.sol-box .sw{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:5px}
+
+@media(max-width:500px){
+  .sc-head{padding:.9rem 1.1rem}.sb{padding:.2rem 1.1rem 1.25rem}.step-dots{padding:.6rem 1.1rem .4rem}
+  .win-stats{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div style="font-size:2.8rem;margin-bottom:4px">⚽</div>
+  <h1>WM Digital-Rallye 2026</h1>
+  <p>Digitale Grundbildung – echte Aufgaben am Laptop</p>
+</header>
+
+<!-- ════════════════ INTRO ════════════════ -->
+<div id="s-intro">
+<div class="wrap">
+  <div class="card">
+    <h2 style="font-size:1.9rem;color:var(--g);margin-bottom:.5rem">Deine Mission 🎯</h2>
+    <p style="color:var(--muted);margin-bottom:.75rem;font-size:.95rem">Du bist heute IT-Spezialistin / IT-Spezialist beim WM-Organisationskomitee! Löse <strong>18 Stationen</strong> – jede mit mehreren Aufgaben. Manche erledigst du direkt hier, andere <strong>am Laptop</strong> (Word, Internet, Screenshot).</p>
+    <div class="tag-row">
+      <span class="tag t-b">🌐 Internet recherchieren</span>
+      <span class="tag t-o">📝 Word-Dokumente</span>
+      <span class="tag t-r">🔒 Sicherheit & Passwörter</span>
+      <span class="tag t-p">📁 Dateien & Ordner</span>
+      <span class="tag t-g">📸 Screenshot erstellen</span>
+    </div>
+    <div class="rules-list">
+      <div class="rule-row"><span class="rn">1</span><span>Lies jede Aufgabe genau durch – manche brauchst du den <strong>Laptop und das Internet</strong>.</span></div>
+      <div class="rule-row"><span class="rn">2</span><span>Bei Laptop-Aufgaben: erledigen, dann Datei oder Screenshot <strong>hier hochladen</strong> als Beweis.</span></div>
+      <div class="rule-row"><span class="rn">3</span><span>Jede fertige Station bringt dir einen <strong>Buchstaben</strong> – schreib ihn auf!</span></div>
+      <div class="rule-row"><span class="rn">4</span><span>Wer zuerst das vollständige Lösungswort zur Lehrperson bringt, <strong>gewinnt</strong>! 🏆</span></div>
+    </div>
+    <div style="background:var(--gp);border-radius:var(--rs);padding:11px 15px;font-size:.86rem;color:var(--g);font-weight:600;margin-bottom:1.25rem">
+      ⏱️ Plane ca. <strong>1,5 Stunden</strong> ein. Sorgfältig arbeiten ist wichtiger als schnell sein!
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:.5rem">
+      <input type="text" id="pname" placeholder="Dein Name …" style="max-width:260px" maxlength="30" autocomplete="off"/>
+      <button class="btn btn-g" onclick="startGame()">Los geht's ⚽</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════ GAME ════════════════ -->
+<div id="s-game">
+<div class="wrap">
+
+  <div class="prog-wrap">
+    <div class="prog-info">
+      <div class="prog-lbl" id="plbl">Station 1 von 18</div>
+      <div class="prog-bar"><div class="prog-fill" id="pfill" style="width:0%"></div></div>
+      <div class="prog-dots" id="pdots"></div>
+    </div>
+    <div class="score-box">
+      <div class="sn" id="scorenum">0</div>
+      <div class="sl">Punkte</div>
+    </div>
+  </div>
+
+  <div class="lw-box">
+    <h3>🔑 Lösungswort – jeden Buchstaben aufschreiben!</h3>
+    <div class="lboxes" id="lboxes"></div>
+  </div>
+
+  <div id="station-area"></div>
+
+</div>
+</div>
+
+<!-- ════════════════ WIN ════════════════ -->
+<div id="s-win">
+<div class="wrap">
+  <div class="win-card">
+    <div style="font-size:4.5rem">🏆</div>
+    <h2>MISSION ERFÜLLT!</h2>
+    <div style="font-size:1rem;color:var(--muted);margin:.4rem 0 1.25rem" id="wname">Super!</div>
+    <div class="sol-box">
+      <p>Das Lösungswort lautet:</p>
+      <div class="sw" id="solword">KEYBOARD</div>
+    </div>
+    <p style="font-size:.88rem;color:var(--muted);margin-bottom:1.5rem">Zeig dieses Wort sofort deiner Lehrperson! 🎉</p>
+    <div class="win-stats">
+      <div class="wstat"><div class="wsn" id="wst">0</div><div class="wsl">Stationen</div></div>
+      <div class="wstat"><div class="wsn" id="wsp">0</div><div class="wsl">Punkte</div></div>
+      <div class="wstat"><div class="wsn" id="wsh">0</div><div class="wsl">Tipps benutzt</div></div>
+    </div>
+    <button class="btn btn-out" onclick="restart()">Nochmal spielen</button>
+  </div>
+</div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// LÖSUNGSWORT: KEYBOARD (8 Buchstaben)
+// Jede zweite Station (1,3,5,7,9,11,13,15) gibt einen Buchstaben
+// ══════════════════════════════════════════════════════
+const SOLUTION = "KEYBOARD";
+
+// ══════════════════════════════════════════════════════
+// STATIONEN
+// Typen der Steps:
+//   mc       – Multiple Choice
+//   cb       – Checkboxen (mehrere richtig)
+//   text     – Texteingabe (Recherche-Ergebnis)
+//   upload   – Datei hochladen (.docx / Bild)
+//   info     – Info-Box + Bestätigung (kein Fehler möglich)
+// ══════════════════════════════════════════════════════
+const STATIONS = [
+
+// ── 1 ── DATEIEN & ORDNER ───────────────────────────────
+{ title:"Chaos im WM-Büro!", icon:"📁", color:"#f2eeff", letter:"K",
+  steps:[
+  { type:"mc", badge:"Wissen", badgeColor:"#6233a0", badgeBg:"#f2eeff",
+    q:"Das WM-Büro hat alle Dateien durcheinandergebracht. Welcher Dateiname ist korrekt und professionell?",
+    opts:["wm spielplan endversion FINAL neu2.docx","WM_Spielplan_2026.docx","Datei1.docx","asdfghjk.docx"],
+    correct:"WM_Spielplan_2026.docx",
+    hint:"Gute Dateinamen: kein Leerzeichen, kein 'final_neu', kurz und beschreibend.",
+    points:15
+  },
+  { type:"cb", badge:"Wissen", badgeColor:"#6233a0", badgeBg:"#f2eeff",
+    q:"Welche Regeln gelten für gute Dateinamen? Kreuze alles Richtige an!",
+    items:[
+      {t:"Keine Leerzeichen – lieber Unterstrich _ verwenden", ok:true},
+      {t:"'FINAL_final_neu_v3' ist ein guter Name", ok:false},
+      {t:"Der Name soll beschreiben was drin ist", ok:true},
+      {t:"Datum sinnvoll ergänzen (z.B. 2026-07-15)", ok:true},
+      {t:"Sonderzeichen wie ? * / : im Namen verwenden", ok:false},
+    ],
+    hint:"3 Aussagen sind richtig, 2 falsch. Sonderzeichen wie ? * / : sind in Dateinamen verboten!",
+    points:15
+  },
+  { type:"upload", badge:"Laptop-Aufgabe", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Jetzt bist du dran am Laptop!",
+    task:{
+      title:"Aufgabe am Laptop",
+      steps:[
+        "Öffne den Windows-Explorer (Ordner-Symbol in der Taskleiste)",
+        "Navigiere zu deinem Dokumente-Ordner",
+        "Erstelle dort einen neuen Ordner – benenne ihn: <strong>WM_2026_Dein-Vorname</strong>",
+        "Mache einen Screenshot des Ordners im Explorer (Taste: Win + Shift + S oder Druck-Taste)",
+        "Lade den Screenshot hier hoch",
+      ],
+      note:"Screenshot = Foto deines Bildschirms. Win+Shift+S öffnet das Snipping-Tool."
+    },
+    accept:["image"],
+    hint:"Win + Shift + S → Bereich auswählen → Bild wird in die Zwischenablage kopiert → in Paint einfügen → speichern → hier hochladen.",
+    points:20
+  }
+]},
+
+// ── 2 ── WORD DOKUMENT ──────────────────────────────────
+{ title:"WM-Pressemitteilung", icon:"📝", color:"#fff0e6", letter:"E",
+  steps:[
+  { type:"mc", badge:"Wissen", badgeColor:"#c45c0a", badgeBg:"#fff0e6",
+    q:"Welche Formatierung gehört zu einer professionellen Überschrift in Word?",
+    opts:["Schriftgröße 8, kursiv, bunt","Schriftgröße 18, fett, Formatvorlage 'Überschrift 1'","Alles in Großbuchstaben und unterstrichen","Gleich wie der Fließtext, Größe 12"],
+    correct:"Schriftgröße 18, fett, Formatvorlage 'Überschrift 1'",
+    hint:"In Word gibt es fertige Formatvorlagen. 'Überschrift 1' macht Text automatisch groß und fett.",
+    points:10
+  },
+  { type:"upload", badge:"Laptop-Aufgabe", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Schreibe jetzt eine echte Pressemitteilung in Word!",
+    task:{
+      title:"Aufgabe in Word",
+      steps:[
+        "Öffne Microsoft Word (Start-Menü → Word)",
+        "Schreibe die Überschrift: <strong>Österreich bei der WM 2026!</strong>",
+        "Formatiere die Überschrift: fett + Schriftgröße 18 (oder Formatvorlage 'Überschrift 1')",
+        "Schreibe darunter 2–3 Sätze: Wann, wo und warum das wichtig ist (erfinde es ruhig!)",
+        "Füge am Ende ein: <strong>Kontakt: dein.name@wm2026.at</strong>",
+        "Speichere die Datei als: <strong>Pressemitteilung_DeinVorname.docx</strong> im Ordner WM_2026",
+        "Lade die .docx-Datei hier hoch",
+      ],
+      note:"Wichtig: Dateiname muss .docx sein und die Überschrift muss formatiert sein!"
+    },
+    accept:["docx"],
+    hint:"Datei → Speichern unter → Dateityp: Word-Dokument (.docx) → Namen eingeben → Speichern.",
+    points:25
+  },
+  { type:"mc", badge:"Wissen", badgeColor:"#c45c0a", badgeBg:"#fff0e6",
+    q:"Was bedeutet das Tastenkürzel Strg + S in Word?",
+    opts:["Text suchen","Datei speichern","Alles auswählen","Rückgängig machen"],
+    correct:"Datei speichern",
+    hint:"Strg + S = Save = Speichern. Merke: S wie Speichern!",
+    points:10
+  }
+]},
+
+// ── 3 ── INTERNET RECHERCHE ─────────────────────────────
+{ title:"WM-Recherche-Profi", icon:"🔍", color:"#e8eef9", letter:"Y",
+  steps:[
+  { type:"mc", badge:"Wissen", badgeColor:"#1a4fa0", badgeBg:"#e8eef9",
+    q:"Welche Website ist die zuverlässigste Quelle für offizielle WM-Informationen?",
+    opts:["wm2026-gerüchte.blogspot.com","fifa.com – die offizielle FIFA-Website","facebook.com/wm2026fan","wikipedia.org"],
+    correct:"fifa.com – die offizielle FIFA-Website",
+    hint:"Für offizielle Infos immer die offizielle Organisation fragen. FIFA = Fédération Internationale de Football Association.",
+    points:10
+  },
+  { type:"text", badge:"Internet-Aufgabe", badgeColor:"#1a4fa0", badgeBg:"#e8eef9",
+    q:"Recherchiere jetzt im Internet!",
+    task:{
+      title:"Aufgabe im Browser",
+      steps:[
+        "Öffne einen Browser (Edge oder Chrome)",
+        "Gehe auf <strong>fifa.com</strong> oder suche bei Google: <strong>WM 2026 Gastgeber</strong>",
+        "Finde heraus: In welchen 3 Ländern findet die WM 2026 statt?",
+        "Gib die 3 Länder unten ein (durch Komma getrennt)",
+      ],
+      note:"Tipp: Die Antwort findest du schnell auf der FIFA-Website oder bei Wikipedia."
+    },
+    answer:"usa kanada mexiko",
+    accept:[["usa","vereinigte staaten","united states"],["kanada","canada"],["mexiko","mexico"]],
+    requireAll:true,
+    hint:"Die WM 2026 wird von 3 nordamerikanischen Ländern gemeinsam ausgetragen. Alle 3 Länder eingeben!",
+    points:20
+  },
+  { type:"text", badge:"Internet-Aufgabe", badgeColor:"#1a4fa0", badgeBg:"#e8eef9",
+    q:"Noch eine Recherche-Frage:\n\nWie viele Teams nehmen an der WM 2026 teil? (Erstmals in der WM-Geschichte so viele!)",
+    task:{
+      title:"Googeln!",
+      steps:[
+        "Suche bei Google: <strong>WM 2026 wie viele Teams</strong>",
+        "Gib die Zahl unten ein",
+      ]
+    },
+    answer:"48",
+    accept:["48"],
+    exactMatch:true,
+    hint:"Es sind deutlich mehr als die 32 Teams bei früheren WMs.",
+    points:15
+  }
+]},
+
+// ── 4 ── FAKE NEWS ──────────────────────────────────────
+{ title:"Fake News Detektivin", icon:"🕵️", color:"#fdecea", letter:"B",
+  steps:[
+  { type:"cb", badge:"Wissen", badgeColor:"#b83232", badgeBg:"#fdecea",
+    q:"Welche Merkmale deuten auf Fake News hin? (Alle richtigen ankreuzen!)",
+    items:[
+      {t:"Reißerischer Titel mit GROSSBUCHSTABEN und !!!!", ok:true},
+      {t:"Unbekannte Webseite mit seltsamer URL", ok:true},
+      {t:"Klare Quellenangabe (Autor, Datum, Organisation)", ok:false},
+      {t:"'Teile das sofort!!' oder 'Das wird versteckt!'", ok:true},
+      {t:"Kein Datum, kein Autor angegeben", ok:true},
+      {t:"Artikel auch auf orf.at oder apa.at zu finden", ok:false},
+    ],
+    hint:"4 der 6 Punkte sind Merkmale von Fake News.",
+    points:15
+  },
+  { type:"text", badge:"Internet-Aufgabe", badgeColor:"#b83232", badgeBg:"#fdecea",
+    q:"Überprüfe eine Schlagzeile!\n\nDu siehst auf Instagram: 'WM 2026 ABGESAGT!! FIFA ist pleite!! 10.000 Quellen bestätigen!! JETZT TEILEN!!'\n\nRecherchiere bei Google ob das stimmt und nenne einen Grund warum diese Meldung verdächtig ist.",
+    task:{
+      title:"Aufgabe im Browser",
+      steps:[
+        "Suche bei Google: <strong>WM 2026 abgesagt</strong>",
+        "Schau ob seriöse Seiten (orf.at, fifa.com, sport.orf.at) das bestätigen",
+        "Schreibe unten: Ist es wahr? + Ein Grund warum die Meldung verdächtig ist",
+      ]
+    },
+    answer:"fake",
+    accept:["fake","nicht wahr","falsch","keine quelle","ausrufezeichen","grossbuchstaben","quelle","seriös","nicht bestätigt","erfunden"],
+    freetext:true,
+    hint:"Suche nach seriösen Quellen. Wenn keine offizielle Seite das bestätigt und die Meldung reißerisch ist → Fake News!",
+    points:20
+  },
+  { type:"mc", badge:"Wissen", badgeColor:"#b83232", badgeBg:"#fdecea",
+    q:"Was solltest du tun bevor du eine Neuigkeit weiterteilst?",
+    opts:["Sofort teilen damit alle Bescheid wissen","Quelle prüfen, andere seriöse Seiten vergleichen, dann entscheiden","Nur teilen wenn viele Leute es schon geteilt haben","Nichts teilen – Internet ist sowieso unzuverlässig"],
+    correct:"Quelle prüfen, andere seriöse Seiten vergleichen, dann entscheiden",
+    hint:"Immer erst prüfen! Mehrere unabhängige seriöse Quellen müssen es bestätigen.",
+    points:10
+  }
+]},
+
+// ── 5 ── PASSWÖRTER ─────────────────────────────────────
+{ title:"Passwort-Expertin", icon:"🔒", color:"#fdecea", letter:"O",
+  steps:[
+  { type:"mc", badge:"Wissen", badgeColor:"#b83232", badgeBg:"#fdecea",
+    q:"Welches Passwort ist am sichersten?",
+    opts:["passwort123","WM2026!","Mia_Kickt_Fussball#99","12345678"],
+    correct:"Mia_Kickt_Fussball#99",
+    hint:"Sicher = lang (12+ Zeichen) + Groß/Klein + Zahlen + Sonderzeichen + kein echtes Wort.",
+    points:10
+  },
+  { type:"text", badge:"Internet-Aufgabe", badgeColor:"#b83232", badgeBg:"#fdecea",
+    q:"Teste ein Passwort auf einer echten Sicherheits-Webseite!",
+    task:{
+      title:"Aufgabe im Browser",
+      steps:[
+        "Öffne den Browser und gehe zu: <strong>security.org/how-secure-is-my-password</strong>",
+        "Gib dort ein schwaches Passwort ein (z.B. <strong>hallo123</strong>) und schau wie lange es dauert es zu knacken",
+        "Gib dann ein starkes Passwort ein (z.B. <strong>WM_Finale_2026!!</strong>)",
+        "Schreibe unten: Wie lange dauert es das starke Passwort zu knacken?",
+      ],
+      note:"Gib dort NIEMALS dein echtes Passwort ein!"
+    },
+    answer:"lang",
+    accept:["jahr","jahre","jahrhundert","billion","trillion","million","tausend","lang","sehr lang","ewig","century","centuries"],
+    freetext:true,
+    hint:"Ein wirklich starkes Passwort braucht Milliarden von Jahren zum Knacken!",
+    points:20
+  },
+  { type:"upload", badge:"Laptop-Aufgabe", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Mache einen Screenshot als Beweis!",
+    task:{
+      title:"Screenshot erstellen",
+      steps:[
+        "Gehe nochmal auf security.org/how-secure-is-my-password",
+        "Gib das starke Passwort ein damit das Ergebnis sichtbar ist",
+        "Mache einen Screenshot (Win + Shift + S)",
+        "Speichere ihn und lade ihn hier hoch",
+      ],
+      note:"Der Screenshot soll zeigen wie lange das Knacken dauert."
+    },
+    accept:["image"],
+    hint:"Win + Shift + S → Bereich um das Passwort-Ergebnis auswählen → in Paint einfügen → speichern → hochladen.",
+    points:15
+  }
+]},
+
+// ── 6 ── ORDNERSTRUKTUR ─────────────────────────────────
+{ title:"Ordnung im Computer", icon:"🗂️", color:"#f2eeff", letter:"A",
+  steps:[
+  { type:"mc", badge:"Wissen", badgeColor:"#6233a0", badgeBg:"#f2eeff",
+    q:"Was ist der richtige Aufbau eines Dateipfades?",
+    opts:[
+      "Dateiname → Unterordner → Hauptordner",
+      "Hauptordner → Unterordner → Dateiname",
+      "Alles in einem Ordner ohne Struktur",
+      "Zuerst die Datei, dann der Ordner"
+    ],
+    correct:"Hauptordner → Unterordner → Dateiname",
+    hint:"Ein Dateipfad geht vom Allgemeinen zum Speziellen: C:\\Dokumente\\WM_2026\\Spielplan.docx",
+    points:10
+  },
+  { type:"upload", badge:"Laptop-Aufgabe", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Erstelle eine saubere Ordnerstruktur für das WM-Büro!",
+    task:{
+      title:"Aufgabe im Windows-Explorer",
+      steps:[
+        "Öffne den Windows-Explorer",
+        "Gehe in deinen Ordner <strong>WM_2026_DeinVorname</strong> (den du in Station 1 erstellt hast)",
+        "Erstelle darin 3 Unterordner: <strong>Spielplan</strong>, <strong>Pressemitteilungen</strong>, <strong>Fotos</strong>",
+        "Verschiebe deine Pressemitteilung aus Station 2 in den Ordner <strong>Pressemitteilungen</strong>",
+        "Mache einen Screenshot der Ordnerstruktur",
+        "Lade den Screenshot hier hoch",
+      ],
+      note:"Die Struktur soll so aussehen: WM_2026 → Spielplan / Pressemitteilungen / Fotos"
+    },
+    accept:["image"],
+    hint:"Rechtsklick im Explorer → Neu → Ordner → Namen eingeben → Enter.",
+    points:20
+  },
+  { type:"cb", badge:"Wissen", badgeColor:"#6233a0", badgeBg:"#f2eeff",
+    q:"Was sind Vorteile einer guten Ordnerstruktur? (Alles Richtige ankreuzen!)",
+    items:[
+      {t:"Dateien sind schneller zu finden", ok:true},
+      {t:"Der Computer wird schneller", ok:false},
+      {t:"Ordnung erleichtert die Zusammenarbeit mit anderen", ok:true},
+      {t:"Backups sind einfacher durchzuführen", ok:true},
+      {t:"Man braucht weniger Speicherplatz", ok:false},
+    ],
+    hint:"Eine gute Struktur spart Zeit beim Suchen und hilft beim Teilen von Dateien.",
+    points:15
+  }
+]},
+
+// ── 7 ── DATEIFORMATE ───────────────────────────────────
+{ title:"Das richtige Format", icon:"💾", color:"#e8eef9", letter:"R",
+  steps:[
+  { type:"mc", badge:"Wissen", badgeColor:"#1a4fa0", badgeBg:"#e8eef9",
+    q:"Der WM-Spielplan soll an alle 32 Teams geschickt werden und darf nicht versehentlich verändert werden. Welches Format wählst du?",
+    opts:["Spielplan.docx – Word","Spielplan.pdf – PDF","Spielplan.txt – Nur Text","Spielplan.xlsx – Excel"],
+    correct:"Spielplan.pdf – PDF",
+    hint:"PDF = sieht auf jedem Gerät gleich aus und kann nicht einfach verändert werden.",
+    points:10
+  },
+  { type:"upload", badge:"Laptop-Aufgabe", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Speichere dein Word-Dokument zusätzlich als PDF!",
+    task:{
+      title:"Word → PDF exportieren",
+      steps:[
+        "Öffne deine Pressemitteilung aus Station 2 in Word",
+        "Klicke auf <strong>Datei → Speichern unter</strong>",
+        "Wähle als Dateityp: <strong>PDF (*.pdf)</strong>",
+        "Speichere sie als <strong>Pressemitteilung_DeinVorname.pdf</strong> im Ordner Pressemitteilungen",
+        "Lade die PDF-Datei hier hoch",
+      ],
+      note:"In Word: Datei → Exportieren → PDF erstellen geht auch!"
+    },
+    accept:["pdf"],
+    hint:"Datei → Speichern unter → Dateityp-Dropdown → PDF (*.pdf) → Speichern.",
+    points:20
+  },
+  { type:"cb", badge:"Wissen", badgeColor:"#1a4fa0", badgeBg:"#e8eef9",
+    q:"Welche Aussagen über Dateiformate sind richtig?",
+    items:[
+      {t:".pdf Dateien sind schwer zu bearbeiten – das ist oft gewollt", ok:true},
+      {t:"Alle Dateien können in jedem Programm geöffnet werden", ok:false},
+      {t:".jpg und .png sind Bildformate", ok:true},
+      {t:"Die Dateiendung zeigt welches Programm die Datei öffnen kann", ok:true},
+      {t:".mp4 ist ein Format für Textdokumente", ok:false},
+    ],
+    hint:"Die Dateiendung ist wie ein Etikett das zeigt was in der Datei steckt.",
+    points:15
+  }
+]},
+
+// ── 8 ── URHEBERRECHT & INTERNET ────────────────────────
+{ title:"Urheberrecht im Netz", icon:"©️", color:"#fff0e6", letter:"D",
+  steps:[
+  { type:"mc", badge:"Wissen", badgeColor:"#c45c0a", badgeBg:"#fff0e6",
+    q:"Du baust eine Schulwebsite über die WM und findest bei Google ein cooles Foto von Ronaldo. Was musst du beachten?",
+    opts:[
+      "Einfach kopieren – im Internet ist alles kostenlos",
+      "Den Fotografen fragen oder eine lizenzfreie Quelle nutzen",
+      "Das Bild verkleinern – dann ist es erlaubt",
+      "Nur für die Schule ist alles erlaubt"
+    ],
+    correct:"Den Fotografen fragen oder eine lizenzfreie Quelle nutzen",
+    hint:"Fotos im Internet sind nicht automatisch frei nutzbar! Urheberrecht schützt den Fotografen.",
+    points:10
+  },
+  { type:"text", badge:"Internet-Aufgabe", badgeColor:"#c45c0a", badgeBg:"#fff0e6",
+    q:"Suche ein lizenzfreies WM-Bild!",
+    task:{
+      title:"Aufgabe im Browser",
+      steps:[
+        "Gehe auf <strong>pixabay.com</strong> (lizenzfreie Bilder)",
+        "Suche nach: <strong>soccer</strong> oder <strong>football</strong>",
+        "Schau dir die Lizenz an – bei Pixabay sind alle Bilder frei nutzbar",
+        "Schreibe unten: Was steht bei Pixabay unter jedem Bild zur Lizenz?",
+      ],
+      note:"Pixabay, Unsplash, und Pexels sind sichere Quellen für lizenzfreie Bilder."
+    },
+    answer:"pixabay lizenz",
+    accept:["pixabay","lizenz","frei","kostenlos","free","nutzbar","erlaubt","content license"],
+    freetext:true,
+    hint:"Auf Pixabay steht unter jedem Bild 'Pixabay Lizenz' oder 'Free for commercial use'.",
+    points:15
+  },
+  { type:"upload", badge:"Laptop-Aufgabe", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Lade ein lizenzfreies Bild herunter und füge es in dein Word-Dokument ein!",
+    task:{
+      title:"Bild in Word einfügen",
+      steps:[
+        "Lade bei Pixabay ein Fußball-Bild herunter (Button 'Kostenloser Download')",
+        "Öffne deine Pressemitteilung in Word",
+        "Füge das Bild ein: <strong>Einfügen → Bilder → Dieses Gerät</strong>",
+        "Passe die Größe an (nicht zu groß!)",
+        "Speichere das Dokument erneut (Strg + S)",
+        "Lade die aktualisierte .docx-Datei hier hoch",
+      ],
+      note:"Das Bild muss im Dokument sichtbar sein!"
+    },
+    accept:["docx"],
+    hint:"Einfügen → Bilder → Durchsuchen → dein gespeichertes Bild auswählen → Einfügen.",
+    points:20
+  }
+]},
+
+// ── 9 ── DATENSCHUTZ & PHISHING ─────────────────────────
+{ title:"Datenschutz-Check", icon:"🛡️", color:"#fdecea", letter:"",
+  steps:[
+  { type:"cb", badge:"Wissen", badgeColor:"#b83232", badgeBg:"#fdecea",
+    q:"Welche Informationen sollte man NICHT öffentlich im Internet posten?",
+    items:[
+      {t:"Vollständige Heimatadresse", ok:true},
+      {t:"Lieblingsfilm oder Lieblingsmusik", ok:false},
+      {t:"Wann du im Urlaub bist (Einbrecher-Info!)", ok:true},
+      {t:"Handynummer und E-Mail-Adresse", ok:true},
+      {t:"Welchen Sportverein du magst", ok:false},
+      {t:"Fotos die zeigen wo du zur Schule gehst", ok:true},
+    ],
+    hint:"Alles was Fremde nutzen könnten um dich zu finden oder dir zu schaden – nicht posten!",
+    points:15
+  },
+  { type:"mc", badge:"Wissen", badgeColor:"#b83232", badgeBg:"#fdecea",
+    q:"Du bekommst eine E-Mail: 'Glückwunsch! Du hast 2 WM-Freikarten gewonnen! Klicke hier und gib Name, Adresse und Kreditkartennummer ein.' Was tust du?",
+    opts:[
+      "Sofort klicken – das ist eine riesige Chance!",
+      "Daten eingeben aber nur Name und Adresse",
+      "Niemals klicken – das ist Phishing!",
+      "Den Link öffnen und erst schauen"
+    ],
+    correct:"Niemals klicken – das ist Phishing!",
+    hint:"Phishing = gefälschte E-Mails die Daten stehlen. Merkmale: unerwarteter Gewinn, Link, Dateneingabe.",
+    points:15
+  },
+  { type:"text", badge:"Internet-Aufgabe", badgeColor:"#b83232", badgeBg:"#fdecea",
+    q:"Was bedeutet DSGVO? Recherchiere es!",
+    task:{
+      title:"Kurze Recherche",
+      steps:[
+        "Suche bei Google: <strong>DSGVO Erklärung einfach</strong>",
+        "Lies eine kurze Erklärung",
+        "Schreibe unten wofür DSGVO steht (ausgeschrieben)",
+      ]
+    },
+    answer:"datenschutz grundverordnung",
+    accept:[["datenschutz"],["grundverordnung","dsgvo","datenschutzgrundverordnung"]],
+    requireAll:true,
+    hint:"DSGVO = vier Wörter auf Deutsch, ein europäisches Gesetz zum Schutz von Daten.",
+    points:15
+  }
+]},
+
+// ── 10 ── E-MAIL SCHREIBEN ──────────────────────────────
+{ title:"Professionelle E-Mail", icon:"📧", color:"#fff0e6", letter:"",
+  steps:[
+  { type:"mc", badge:"Wissen", badgeColor:"#c45c0a", badgeBg:"#fff0e6",
+    q:"Du schreibst eine offizielle Anfrage ans WM-Komitee. Welche Anrede ist richtig?",
+    opts:["Hey Leute!!","Hallo zusammen,","Sehr geehrte Damen und Herren,","Was geht?"],
+    correct:"Sehr geehrte Damen und Herren,",
+    hint:"Offizielle E-Mails: 'Sehr geehrte/r ...' oder 'Sehr geehrte Damen und Herren,'",
+    points:10
+  },
+  { type:"upload", badge:"Laptop-Aufgabe", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Schreibe eine professionelle E-Mail in Word!",
+    task:{
+      title:"E-Mail in Word verfassen",
+      steps:[
+        "Öffne ein neues Word-Dokument",
+        "Schreibe eine E-Mail an das WM-Komitee mit folgendem Aufbau:",
+        "<strong>Betreff:</strong> Anfrage WM 2026 Tickets",
+        "<strong>Sehr geehrte Damen und Herren,</strong>",
+        "Haupttext: 2–3 Sätze – du fragst nach Informationen zu WM-Tickets für deine Schulklasse",
+        "<strong>Mit freundlichen Grüßen,</strong> + dein Name",
+        "Speichere als <strong>Email_DeinVorname.docx</strong> und lade sie hoch",
+      ],
+      note:"Achte auf: korrekte Anrede, sachlicher Ton, vollständige Grußformel!"
+    },
+    accept:["docx"],
+    hint:"Betreff → Anrede → Text → Grußformel → Name. Keine Emojis in offiziellen E-Mails!",
+    points:20
+  },
+  { type:"cb", badge:"Wissen", badgeColor:"#c45c0a", badgeBg:"#fff0e6",
+    q:"Welche Regeln gelten für professionelle E-Mails?",
+    items:[
+      {t:"Betreff immer ausfüllen", ok:true},
+      {t:"Emojis und Slang sind ok 😎🔥", ok:false},
+      {t:"Rechtschreibung und Grammatik prüfen", ok:true},
+      {t:"Anhänge im Text erwähnen ('Im Anhang findest du ...')", ok:true},
+      {t:"In GROSSBUCHSTABEN schreiben damit es auffällt", ok:false},
+    ],
+    hint:"Professionelle E-Mails: sachlich, korrekt, kein Slang, kein GROSSSCHREIBEN.",
+    points:15
+  }
+]},
+
+// ── 11 ── BROWSER & SICHERHEIT ──────────────────────────
+{ title:"Sicher im Browser", icon:"🔐", color:"#e8eef9", letter:"",
+  steps:[
+  { type:"mc", badge:"Wissen", badgeColor:"#1a4fa0", badgeBg:"#e8eef9",
+    q:"Woran erkennst du eine sichere Website beim Online-Kauf?",
+    opts:[
+      "Die Seite sieht schön aus",
+      "Die URL beginnt mit https:// und zeigt ein Schloss 🔒",
+      "Viele bunte Bilder und Angebote",
+      "Jemand hat es dir empfohlen"
+    ],
+    correct:"Die URL beginnt mit https:// und zeigt ein Schloss 🔒",
+    hint:"HTTPS + Schloss = verschlüsselte Verbindung. Immer in der Adressleiste prüfen!",
+    points:10
+  },
+  { type:"text", badge:"Internet-Aufgabe", badgeColor:"#1a4fa0", badgeBg:"#e8eef9",
+    q:"Überprüfe eine Website auf Sicherheit!",
+    task:{
+      title:"Aufgabe im Browser",
+      steps:[
+        "Öffne den Browser und gehe auf <strong>fifa.com</strong>",
+        "Schau in der Adressleiste ganz links – siehst du ein Schloss-Symbol?",
+        "Klicke auf das Schloss und lies was dort steht",
+        "Schreibe unten: Beginnt die Adresse mit https oder http?",
+      ]
+    },
+    answer:"https",
+    accept:["https"],
+    exactMatch:true,
+    hint:"Sichere Seiten beginnen immer mit https:// – das s steht für 'secure' = sicher.",
+    points:15
+  },
+  { type:"upload", badge:"Laptop-Aufgabe", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Screenshot des Schloss-Symbols als Beweis!",
+    task:{
+      title:"Screenshot machen",
+      steps:[
+        "Gehe auf fifa.com",
+        "Mache einen Screenshot der Adressleiste mit dem Schloss-Symbol (Win + Shift + S)",
+        "Lade den Screenshot hier hoch",
+      ],
+      note:"Der Screenshot soll die Adressleiste mit https:// und dem Schloss zeigen."
+    },
+    accept:["image"],
+    hint:"Win + Shift + S → nur die Adressleiste oben im Browser auswählen.",
+    points:15
+  }
+]},
+
+// ── 12 ── TABELLEN & EXCEL ──────────────────────────────
+{ title:"WM-Tabelle in Excel", icon:"📊", color:"#e8f7ee", letter:"",
+  steps:[
+  { type:"mc", badge:"Wissen", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Welche Formel berechnet in Excel die Summe der Zellen B2 bis B5?",
+    opts:["=PLUS(B2,B5)","=SUMME(B2:B5)","=B2+B5","=RECHNEN(B2:B5)"],
+    correct:"=SUMME(B2:B5)",
+    hint:"=SUMME() ist die Standard-Summenfunktion in Excel. Der Doppelpunkt bedeutet 'von bis'.",
+    points:10
+  },
+  { type:"upload", badge:"Laptop-Aufgabe", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Erstelle eine echte WM-Tabelle in Excel!",
+    task:{
+      title:"Aufgabe in Excel",
+      steps:[
+        "Öffne Microsoft Excel",
+        "Erstelle eine Tabelle mit diesen Spalten: <strong>Team | Spiele | Siege | Niederlagen | Tore | Punkte</strong>",
+        "Trage 4 WM-Teams ein (erfinde die Zahlen): z.B. Österreich, Deutschland, Brasilien, Frankreich",
+        "In der Punkte-Spalte: Formel eingeben! Siege × 3 Punkte (z.B. =C2*3)",
+        "Formatiere die Überschriftszeile fett und mit Hintergrundfarbe",
+        "Speichere als <strong>WM_Tabelle_DeinVorname.xlsx</strong>",
+        "Lade die .xlsx-Datei hier hoch",
+      ],
+      note:"Wichtig: In der Punkte-Spalte MUSS eine Formel stehen, keine manuell eingetippte Zahl!"
+    },
+    accept:["xlsx","xls"],
+    hint:"Klicke in die Punkte-Zelle → tippe = → dann die Siege-Zelle × 3 (z.B. =C2*3) → Enter.",
+    points:25
+  },
+  { type:"mc", badge:"Wissen", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Was ist der Unterschied zwischen einer Tabelle und einem Diagramm?",
+    opts:[
+      "Es gibt keinen Unterschied",
+      "Tabelle = genaue Zahlen; Diagramm = visuelle Darstellung der Daten",
+      "Diagramme sind nur für Mathematiker",
+      "Tabellen sind immer besser als Diagramme"
+    ],
+    correct:"Tabelle = genaue Zahlen; Diagramm = visuelle Darstellung der Daten",
+    hint:"Tabelle zum Nachschlagen, Diagramm zum schnellen Vergleichen auf einen Blick.",
+    points:10
+  }
+]},
+
+// ── 13 ── SCREENSHOT & SNIPPING TOOL ────────────────────
+{ title:"Screenshot-Profi", icon:"📸", color:"#f2eeff", letter:"",
+  steps:[
+  { type:"mc", badge:"Wissen", badgeColor:"#6233a0", badgeBg:"#f2eeff",
+    q:"Welche Tastenkombination öffnet das Snipping Tool in Windows 10/11?",
+    opts:["Strg + P","Win + Shift + S","Alt + F4","Strg + Alt + Entf"],
+    correct:"Win + Shift + S",
+    hint:"Win + Shift + S = Windows Snipping Tool. Du kannst dann einen Bereich auswählen.",
+    points:10
+  },
+  { type:"upload", badge:"Laptop-Aufgabe", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Mache einen vollständigen Desktop-Screenshot!",
+    task:{
+      title:"Vollbild-Screenshot",
+      steps:[
+        "Drücke die <strong>Druck-Taste</strong> (PrtScn) auf deiner Tastatur",
+        "Öffne das Programm <strong>Paint</strong> (Suche: Start → Paint)",
+        "Drücke <strong>Strg + V</strong> um den Screenshot einzufügen",
+        "Speichere das Bild als <strong>Desktop_DeinVorname.png</strong> im Ordner Fotos",
+        "Lade das Bild hier hoch",
+      ],
+      note:"Alternativ: Win + Shift + S für einen ausgewählten Bereich."
+    },
+    accept:["image"],
+    hint:"Druck-Taste → Paint öffnen → Strg+V → Speichern unter → PNG.",
+    points:15
+  },
+  { type:"upload", badge:"Laptop-Aufgabe", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Mache jetzt einen Ausschnitt-Screenshot mit dem Snipping Tool!",
+    task:{
+      title:"Ausschnitt-Screenshot",
+      steps:[
+        "Drücke <strong>Win + Shift + S</strong>",
+        "Der Bildschirm wird abgedunkelt",
+        "Ziehe mit der Maus einen Rahmen um deinen WM_2026-Ordner im Explorer",
+        "Das Bild wird in der Zwischenablage gespeichert",
+        "Öffne Paint → Strg+V → als <strong>Snip_DeinVorname.png</strong> speichern",
+        "Lade es hier hoch",
+      ],
+      note:"Unterschied: Druck = ganzer Bildschirm. Win+Shift+S = nur ein Ausschnitt."
+    },
+    accept:["image"],
+    hint:"Nach Win+Shift+S erscheint oben eine kleine Leiste – wähle den Rechteck-Modus.",
+    points:15
+  }
+]},
+
+// ── 14 ── PRÄSENTATION ──────────────────────────────────
+{ title:"WM-Präsentation", icon:"🖥️", color:"#e8eef9", letter:"",
+  steps:[
+  { type:"cb", badge:"Wissen", badgeColor:"#1a4fa0", badgeBg:"#e8eef9",
+    q:"Welche Regeln gelten für eine gute PowerPoint-Präsentation?",
+    items:[
+      {t:"Max. 5–7 Stichpunkte pro Folie", ok:true},
+      {t:"So viel Text wie möglich auf jeder Folie", ok:false},
+      {t:"Einheitliche Schriftart durch die ganze Präsentation", ok:true},
+      {t:"Klare Überschrift auf jeder Folie", ok:true},
+      {t:"Jede Folie in anderer Farbe und Schrift", ok:false},
+      {t:"Bilder lockern die Präsentation auf", ok:true},
+    ],
+    hint:"Weniger ist mehr! Zuhörer sollen zuhören, nicht von der Folie ablesen.",
+    points:15
+  },
+  { type:"upload", badge:"Laptop-Aufgabe", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Erstelle eine Mini-Präsentation über die WM 2026!",
+    task:{
+      title:"Aufgabe in PowerPoint",
+      steps:[
+        "Öffne Microsoft PowerPoint",
+        "Erstelle eine Präsentation mit genau <strong>3 Folien</strong>:",
+        "<strong>Folie 1:</strong> Titelfolie – 'WM 2026' + dein Name",
+        "<strong>Folie 2:</strong> 3 interessante Fakten zur WM 2026 (recherchiere kurz!)",
+        "<strong>Folie 3:</strong> Deine Meinung – Wer wird Weltmeister? Warum?",
+        "Verwende ein einheitliches Design (Design-Tab in PowerPoint)",
+        "Speichere als <strong>WM_Praesi_DeinVorname.pptx</strong>",
+        "Lade die .pptx-Datei hoch",
+      ],
+      note:"Achte auf: einheitliches Design, klare Überschriften, nicht zu viel Text!"
+    },
+    accept:["pptx","ppt"],
+    hint:"Neues Dokument → Design auswählen → Textfelder anklicken und bearbeiten → Speichern unter → PowerPoint-Präsentation.",
+    points:25
+  }
+]},
+
+// ── 15 ── KI & RECHERCHE ────────────────────────────────
+{ title:"KI ausprobieren", icon:"🤖", color:"#e8f7ee", letter:"",
+  steps:[
+  { type:"mc", badge:"Wissen", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Was ist Künstliche Intelligenz (KI)?",
+    opts:[
+      "Ein Roboter mit echtem Gehirn",
+      "Computerprogramme die aus Daten lernen und Aufgaben lösen",
+      "Nur etwas aus Science-Fiction-Filmen",
+      "Ein besonders schneller Computer"
+    ],
+    correct:"Computerprogramme die aus Daten lernen und Aufgaben lösen",
+    hint:"KI lernt aus riesigen Datenmengen – kein Bewusstsein, keine Gefühle, aber sehr mächtig.",
+    points:10
+  },
+  { type:"text", badge:"Internet-Aufgabe", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Stelle einer KI eine Frage zur WM!",
+    task:{
+      title:"Aufgabe mit KI",
+      steps:[
+        "Öffne den Browser und gehe auf <strong>claude.ai</strong> oder <strong>chat.openai.com</strong>",
+        "Falls nötig: Erstelle einen kostenlosen Account",
+        "Stelle der KI folgende Frage: <strong>'Erkläre mir in 3 Sätzen warum Fußball so beliebt ist'</strong>",
+        "Lies die Antwort durch",
+        "Schreibe unten: War die Antwort gut? Was war gut oder nicht gut daran?",
+      ],
+      note:"KI-Antworten sind nicht immer 100% korrekt – immer kritisch prüfen!"
+    },
+    answer:"ki",
+    accept:["gut","interessant","erklärt","antwort","sätze","fußball","beliebt","ja","nein","okay"],
+    freetext:true,
+    hint:"Es gibt keine falsche Antwort – schreib einfach deine ehrliche Meinung zur KI-Antwort!",
+    points:15
+  },
+  { type:"cb", badge:"Wissen", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Welche Aussagen über KI sind richtig?",
+    items:[
+      {t:"KI kann Texte, Bilder und Musik erstellen", ok:true},
+      {t:"KI-Informationen sind immer 100% korrekt", ok:false},
+      {t:"KI wird für Übersetzungen verwendet (z.B. Google Translate)", ok:true},
+      {t:"KI hat Gefühle und ist wie ein Mensch", ok:false},
+      {t:"KI-Aussagen sollte man immer kritisch prüfen", ok:true},
+    ],
+    hint:"KI ist mächtig aber nicht unfehlbar – sie kann 'halluzinieren' = falsche Infos ausgeben.",
+    points:15
+  }
+]},
+
+// ── 16 ── CLOUD & TEILEN ────────────────────────────────
+{ title:"Cloud & Zusammenarbeit", icon:"☁️", color:"#f2eeff", letter:"",
+  steps:[
+  { type:"mc", badge:"Wissen", badgeColor:"#6233a0", badgeBg:"#f2eeff",
+    q:"Du willst deiner Klasse das WM-Projekt teilen. Wie machst du das sicher?",
+    opts:[
+      "Link öffentlich für alle im Internet freigeben",
+      "Link nur mit deiner Klasse teilen (eingeschränkter Zugriff)",
+      "Schreibzugriff für alle im Internet",
+      "Keine Freigabe – jeder macht seine eigene Kopie"
+    ],
+    correct:"Link nur mit deiner Klasse teilen (eingeschränkter Zugriff)",
+    hint:"Schulprojekte: Link nur mit Klassenkameraden teilen. Öffentlich ist zu riskant!",
+    points:10
+  },
+  { type:"text", badge:"Internet-Aufgabe", badgeColor:"#6233a0", badgeBg:"#f2eeff",
+    q:"Lade eine Datei in die Cloud hoch!",
+    task:{
+      title:"Aufgabe mit OneDrive",
+      steps:[
+        "Öffne den Browser und gehe auf <strong>onedrive.live.com</strong> (mit Microsoft-Account) oder verwende den OneDrive-Ordner auf deinem Laptop",
+        "Lade deine Pressemitteilung (docx) in OneDrive hoch",
+        "Klicke auf 'Teilen' → 'Link kopieren'",
+        "Füge den Link unten ein",
+      ],
+      note:"Alternativ: Google Drive (drive.google.com) mit Google-Account funktioniert auch."
+    },
+    answer:"http",
+    accept:["http","https","onedrive","drive.google","sharepoint","1drv","docs.google"],
+    freetext:true,
+    hint:"OneDrive-Links beginnen mit https://1drv.ms/... oder https://onedrive.live.com/...",
+    points:15
+  },
+  { type:"cb", badge:"Wissen", badgeColor:"#6233a0", badgeBg:"#f2eeff",
+    q:"Was sind Vorteile von Cloud-Speicher?",
+    items:[
+      {t:"Dateien von überall abrufen (PC, Handy, Tablet)", ok:true},
+      {t:"Automatisches Backup wenn der Computer kaputt geht", ok:true},
+      {t:"Ohne Internet immer verfügbar", ok:false},
+      {t:"Einfaches Teilen mit anderen", ok:true},
+      {t:"Gratis unbegrenzt Speicherplatz bei allen Anbietern", ok:false},
+    ],
+    hint:"Cloud braucht Internet! Kostenlose Pläne haben meistens Speicherlimits.",
+    points:15
+  }
+]},
+
+// ── 17 ── FINALE ─────────────────────────────────────────
+{ title:"Das große Finale!", icon:"🏆", color:"#fffaed", letter:"",
+  steps:[
+  { type:"cb", badge:"Abschluss", badgeColor:"#b8860b", badgeBg:"#fffaed",
+    q:"Was hast du heute gelernt? Kreuze alles an was stimmt!",
+    items:[
+      {t:"Gute Dateinamen und Ordnerstruktur sparen Zeit", ok:true},
+      {t:"Im Internet ist alles kostenlos und erlaubt", ok:false},
+      {t:"Starke Passwörter schützen meine Daten", ok:true},
+      {t:"Fake News erkenne ich an Quelle, Stil und Inhalt", ok:true},
+      {t:"Persönliche Daten darf ich immer überall posten", ok:false},
+      {t:"PDF ist gut wenn andere das Dokument nicht verändern sollen", ok:true},
+    ],
+    hint:"Das sind die wichtigsten Lernziele der heutigen Rallye!",
+    points:20
+  },
+  { type:"upload", badge:"Abschluss-Aufgabe", badgeColor:"#1a7a3c", badgeBg:"#e8f7ee",
+    q:"Deine Abschluss-Aufgabe: Ein WM-Ordner als Gesamtübersicht!",
+    task:{
+      title:"Finale Laptop-Aufgabe",
+      steps:[
+        "Öffne den Windows-Explorer",
+        "Navigiere zu deinem Ordner <strong>WM_2026_DeinVorname</strong>",
+        "Stelle sicher dass diese Dateien vorhanden sind:",
+        "✅ Pressemitteilungen/Pressemitteilung_DeinVorname.docx",
+        "✅ Pressemitteilungen/Pressemitteilung_DeinVorname.pdf",
+        "✅ WM_Tabelle_DeinVorname.xlsx",
+        "✅ WM_Praesi_DeinVorname.pptx",
+        "Mache einen Screenshot der vollständigen Ordnerstruktur",
+        "Lade ihn hier hoch – das ist dein Abschluss-Beweis!",
+      ],
+      note:"Herzlichen Glückwunsch – du bist fast fertig! 🎉"
+    },
+    accept:["image"],
+    hint:"Der Screenshot soll alle Ordner und Dateien zeigen die du heute erstellt hast.",
+    points:30
+  },
+  { type:"text", badge:"Reflexion", badgeColor:"#b8860b", badgeBg:"#fffaed",
+    q:"Letzte Frage: Was war die schwierigste Aufgabe heute und was hast du dabei gelernt?",
+    task:{
+      title:"Deine Meinung",
+      steps:["Schreibe 1–2 Sätze was die schwierigste Aufgabe war und was du gelernt hast."]
+    },
+    answer:"reflexion",
+    accept:["word","excel","passwort","screenshot","ordner","datei","internet","pdf","powerpoint","cloud","ki","recherche","format"],
+    freetext:true,
+    hint:"Es gibt keine falsche Antwort – schreib einfach ehrlich!",
+    points:15
+  }
+]}
+
+]; // end STATIONS
+
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let si=0, sti=0, score=0, hints=0, done=0;
+let playerName="";
+let stepsDone={};
+let uploadedFiles={};
+
+// ══════════════════════════════════════════════════════
+// START
+// ══════════════════════════════════════════════════════
+function startGame(){
+  playerName=document.getElementById("pname").value.trim()||"Spieler";
+  document.getElementById("s-intro").style.display="none";
+  document.getElementById("s-game").style.display="block";
+  buildLW(); buildDots(); renderStation();
+}
+
+function buildLW(){
+  const w=document.getElementById("lboxes"); w.innerHTML="";
+  SOLUTION.split("").forEach((c,i)=>{
+    const b=document.createElement("div");
+    b.className="lb empty"; b.id="lb"+i;
+    b.innerHTML=`<span class="lc">${c}</span><span class="li">${i+1}</span>`;
+    w.appendChild(b);
+  });
+}
+
+function buildDots(){
+  const w=document.getElementById("pdots"); w.innerHTML="";
+  STATIONS.forEach((_,i)=>{
+    const d=document.createElement("div");
+    d.className="pdot"+(i===0?" cur":""); d.id="pd"+i; d.textContent=i+1;
+    w.appendChild(d);
+  });
+}
+
+function updateUI(){
+  const pct=Math.round((si/STATIONS.length)*100);
+  document.getElementById("pfill").style.width=pct+"%";
+  document.getElementById("plbl").textContent="Station "+(si+1)+" von "+STATIONS.length;
+  document.getElementById("scorenum").textContent=score;
+  STATIONS.forEach((_,i)=>{
+    const d=document.getElementById("pd"+i);
+    if(d) d.className="pdot"+(i<si?" done":i===si?" cur":"");
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER STATION
+// ══════════════════════════════════════════════════════
+function renderStation(){
+  if(si>=STATIONS.length){showWin();return;}
+  updateUI(); sti=0; stepsDone={}; uploadedFiles={};
+  const s=STATIONS[si];
+  const letterBadge=s.letter?`<div class="lw-badge">🔑 Buchstabe <strong>${s.letter}</strong></div>`:"";
+  document.getElementById("station-area").innerHTML=`
+    <div class="sc" id="sc">
+      <div class="sc-head">
+        <div class="sc-icon" style="background:${s.color}">${s.icon}</div>
+        <div class="sc-meta">
+          <div class="sm-top">Station ${si+1} von ${STATIONS.length}</div>
+          <div class="sm-title">${s.title}</div>
+        </div>
+        ${letterBadge}
+      </div>
+      <div class="step-dots" id="sdots2"></div>
+      <div class="sb" id="sb"></div>
+    </div>`;
+  buildStepDots(); renderStep();
+}
+
+function buildStepDots(){
+  const s=STATIONS[si];
+  document.getElementById("sdots2").innerHTML=s.steps.map((_,i)=>`<div class="sdot" id="sd2-${i}"></div>`).join("");
+  updateStepDots();
+}
+function updateStepDots(){
+  STATIONS[si].steps.forEach((_,i)=>{
+    const d=document.getElementById("sd2-"+i);
+    if(d) d.className="sdot"+(i<sti?" done":i===sti?" cur":"");
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER STEP
+// ══════════════════════════════════════════════════════
+function renderStep(){
+  const s=STATIONS[si];
+  if(sti>=s.steps.length){completeStation();return;}
+  updateStepDots();
+  const st=s.steps[sti];
+  const sb=document.getElementById("sb");
+  if(!sb)return;
+
+  let html=`<span class="step-badge" style="background:${st.badgeBg};color:${st.badgeColor}">${st.badge} – Aufgabe ${sti+1} von ${s.steps.length}</span>`;
+  html+=`<div class="step-q">${st.q.replace(/\n/g,"<br>")}</div>`;
+
+  // Task box for laptop tasks
+  if(st.task){
+    html+=`<div class="task-box">
+      <div class="tb-title">💻 ${st.task.title}</div>
+      <ol>${st.task.steps.map(step=>`<li>${step}</li>`).join("")}</ol>
+      ${st.task.note?`<div class="tb-note">💡 ${st.task.note}</div>`:""}
+    </div>`;
+  }
+
+  html+=`<div class="hint-box" id="hbox">${st.hint}</div>`;
+
+  if(st.type==="mc")       html+=buildMC(st);
+  else if(st.type==="cb")  html+=buildCB(st);
+  else if(st.type==="text")html+=buildText(st);
+  else if(st.type==="upload") html+=buildUpload(st);
+
+  html+=`<div class="fb" id="fb"></div>`;
+  html+=`<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px">
+    <button class="hint-btn" id="hbtn" onclick="showHint()">💡 Tipp anzeigen</button>
+    <button class="hint-btn" style="border-color:#aaa;color:#888" onclick="skipStep()">⏭ Aufgabe überspringen</button>
+  </div>`;
+
+  sb.innerHTML=html;
+  const inp=document.getElementById("txt-inp");
+  if(inp) setTimeout(()=>inp.focus(),80);
+}
+
+// ── MC ──────────────────────────────────────────────────
+function buildMC(st){
+  return `<div class="mc-grid">${st.opts.map(o=>`<button class="mc-opt" onclick="checkMC(this,'${esc(o)}')">${o}</button>`).join("")}</div>`;
+}
+function checkMC(el,chosen){
+  if(stepsDone[sti])return;
+  const st=STATIONS[si].steps[sti];
+  document.querySelectorAll(".mc-opt").forEach(b=>b.disabled=true);
+  const ok=chosen===st.correct;
+  el.classList.add(ok?"ok":"err");
+  if(!ok) document.querySelectorAll(".mc-opt").forEach(b=>{if(b.textContent.trim()===st.correct)b.classList.add("ok");});
+  handleResult(ok,st.points);
+}
+
+// ── CHECKBOX ────────────────────────────────────────────
+function buildCB(st){
+  return `<div class="cb-list">${st.items.map((it,i)=>`
+    <label class="cb-row" id="cbr${i}">
+      <input type="checkbox" id="cb${i}"/>
+      <span>${it.t}</span>
+    </label>`).join("")}</div>
+    <button class="btn btn-g btn-sm" onclick="checkCB()">Antwort prüfen →</button>`;
+}
+function checkCB(){
+  if(stepsDone[sti])return;
+  const st=STATIONS[si].steps[sti];
+  let allOk=true;
+  st.items.forEach((it,i)=>{
+    const cb=document.getElementById("cb"+i);
+    const row=document.getElementById("cbr"+i);
+    if(!cb||!row)return;
+    cb.disabled=true;
+    if(cb.checked===it.ok) row.classList.add("ok");
+    else{row.classList.add("err");allOk=false;}
+  });
+  handleResult(allOk,STATIONS[si].steps[sti].points);
+}
+
+// ── TEXT ─────────────────────────────────────────────────
+function buildText(st){
+  return `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+    <input type="text" id="txt-inp" placeholder="Deine Antwort …" autocomplete="off" onkeydown="if(event.key==='Enter')checkText()" style="flex:1;min-width:180px"/>
+    <button class="btn btn-g btn-sm" onclick="checkText()">Prüfen →</button>
+  </div>`;
+}
+function checkText(){
+  if(stepsDone[sti])return;
+  const st=STATIONS[si].steps[sti];
+  const inp=document.getElementById("txt-inp");
+  if(!inp)return;
+  const val=inp.value.trim().toLowerCase();
+  if(!val){setFb(false,"Bitte erst eine Antwort eingeben!");return;}
+
+  // requireAll: accept is array of arrays, every group needs one match
+  if(st.requireAll){
+    const missing=st.accept
+      .filter(group=>!group.some(a=>val.includes(a.toLowerCase())))
+      .map(group=>group[0]);
+    if(missing.length>0){
+      inp.classList.add("err");
+      setFb(false,"Nicht vollständig! Noch fehlend: <strong>"+missing.join(", ")+"</strong> – gib alle Antworten in einem Satz ein!");
+      setTimeout(()=>{inp.classList.remove("err");},1800);
+      return;
+    }
+    inp.classList.add("ok");
+    handleResult(true,st.points);
+    return;
+  }
+
+  // exactMatch: answer must equal one of the accept values exactly
+  if(st.exactMatch){
+    const ok=st.accept.some(a=>val===a.toLowerCase());
+    if(!ok){
+      inp.classList.add("err");
+      setFb(false,"Nicht ganz richtig – gib die Antwort genau ein!");
+      setTimeout(()=>{inp.classList.remove("err");inp.value="";inp.focus();},1400);
+      return;
+    }
+    inp.classList.add("ok");
+    handleResult(true,st.points);
+    return;
+  }
+
+  // freetext or normal: at least one accept keyword must appear
+  const ok=st.accept.some(a=>val.includes(a.toLowerCase()));
+  if(ok){
+    inp.classList.add("ok");
+    handleResult(true,st.points);
+  } else {
+    inp.classList.add("err");
+    setFb(false,"Noch nicht ganz – schau nochmal nach oder nutze den Tipp!");
+    setTimeout(()=>{inp.classList.remove("err");inp.value="";inp.focus();},1400);
+  }
+}
+
+// ── UPLOAD ──────────────────────────────────────────────
+function buildUpload(st){
+  const acceptAttr=st.accept.includes("image")?"accept='image/*,.png,.jpg,.jpeg'"
+    :st.accept.includes("docx")?"accept='.docx,.doc'"
+    :st.accept.includes("pdf")?"accept='.pdf'"
+    :st.accept.includes("xlsx")?"accept='.xlsx,.xls'"
+    :st.accept.includes("pptx")?"accept='.pptx,.ppt'"
+    :"";
+  const typeLabel=st.accept.includes("image")?"Screenshot (PNG oder JPG)"
+    :st.accept.includes("docx")?"Word-Dokument (.docx)"
+    :st.accept.includes("pdf")?"PDF-Datei (.pdf)"
+    :st.accept.includes("xlsx")?"Excel-Datei (.xlsx)"
+    :st.accept.includes("pptx")?"PowerPoint (.pptx)"
+    :"Datei";
+
+  const nameRule=st.accept.includes("image")
+    ?`<div style="background:#fff3cd;border-radius:6px;padding:8px 12px;font-size:.8rem;color:#856404;font-weight:700;margin-bottom:10px">
+        ⚠️ Dateiname muss deinen Vornamen enthalten!<br>
+        Richtig z.B.: <em>Screenshot_${playerName||'DeinName'}.png</em>
+      </div>`
+    :`<div style="background:#fff3cd;border-radius:6px;padding:8px 12px;font-size:.8rem;color:#856404;font-weight:700;margin-bottom:10px">
+        ⚠️ Dateiname muss deinen Vornamen enthalten!<br>
+        Richtig z.B.: <em>Aufgabe_${playerName||'DeinName'}.${st.accept[0]}</em>
+      </div>`;
+
+  return `${nameRule}
+    <div class="upload-area" id="upa">
+      <input type="file" id="file-inp" ${acceptAttr} onchange="handleUpload(this)"/>
+      <div class="ua-icon">📎</div>
+      <div class="ua-text">Klicke hier um eine Datei auszuwählen</div>
+      <div class="ua-sub">${typeLabel}</div>
+    </div>
+    <div id="img-confirm-wrap" style="display:none;margin:10px 0">
+      <div style="font-weight:700;font-size:.88rem;margin-bottom:6px;color:var(--dark)">Ist das der richtige Screenshot / die richtige Datei?</div>
+      <div id="img-preview-box" style="background:#f0f0f0;border-radius:8px;padding:8px;margin-bottom:10px;text-align:center"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-g btn-sm" onclick="confirmUpload()">✅ Ja, das ist richtig</button>
+        <button class="btn btn-sm" style="background:#eee;color:#333;border:1px solid #ccc" onclick="rejectUpload()">❌ Nein, andere Datei wählen</button>
+      </div>
+    </div>
+    <div class="fb" id="upload-fb"></div>`;
+}
+
+function handleUpload(inp){
+  const file=inp.files[0];
+  if(!file)return;
+  const st=STATIONS[si].steps[sti];
+  const name=file.name.toLowerCase();
+  const firstName=(playerName||"").toLowerCase().trim();
+
+  // 1. Format check
+  let formatOk=false;
+  if(st.accept.includes("image")) formatOk=/\.(png|jpg|jpeg|gif|bmp|webp)$/i.test(name);
+  else if(st.accept.includes("docx")) formatOk=/\.(docx|doc)$/i.test(name);
+  else if(st.accept.includes("pdf")) formatOk=/\.pdf$/i.test(name);
+  else if(st.accept.includes("xlsx")) formatOk=/\.(xlsx|xls)$/i.test(name);
+  else if(st.accept.includes("pptx")) formatOk=/\.(pptx|ppt)$/i.test(name);
+  else formatOk=true;
+
+  // 2. Name check – muss Vorname oder zumindest 3+ Zeichen davon enthalten
+  const nameOk = firstName.length<2 || name.includes(firstName) ||
+    (firstName.length>=3 && name.includes(firstName.substring(0,3)));
+
+  // 3. Size check for images – min 20KB (a real screenshot is always larger)
+  const sizeOk = st.accept.includes("image") ? file.size > 20000 : true;
+
+  const ufb=document.getElementById("upload-fb");
+  if(!formatOk){
+    if(ufb) ufb.className="fb show err", ufb.innerHTML="❌ Falsches Dateiformat! Erwartet: "+st.accept.join(", ");
+    uploadedFiles[sti]={valid:false}; return;
+  }
+  if(!nameOk){
+    if(ufb) ufb.className="fb show err", ufb.innerHTML="❌ Der Dateiname muss deinen Vornamen enthalten! Benenne die Datei um (z.B. Screenshot_"+playerName+".png)";
+    uploadedFiles[sti]={valid:false}; return;
+  }
+  if(!sizeOk){
+    if(ufb) ufb.className="fb show err", ufb.innerHTML="❌ Das Bild ist zu klein ("+Math.round(file.size/1024)+" KB). Ein echter Screenshot ist mindestens 20 KB groß. Hast du wirklich einen Screenshot gemacht?";
+    uploadedFiles[sti]={valid:false}; return;
+  }
+
+  // All checks passed – show confirmation
+  uploadedFiles[sti]={file,valid:true,confirmed:false};
+  if(ufb) ufb.className="fb", ufb.innerHTML="";
+
+  const wrap=document.getElementById("img-confirm-wrap");
+  const box=document.getElementById("img-preview-box");
+  if(wrap) wrap.style.display="block";
+  if(box){
+    if(st.accept.includes("image")){
+      const url=URL.createObjectURL(file);
+      box.innerHTML=`<img src="${url}" alt="Vorschau" style="max-width:100%;max-height:220px;border-radius:6px;border:1px solid #ddd"/>
+        <div style="font-size:.78rem;color:#666;margin-top:4px">${file.name} · ${Math.round(file.size/1024)} KB</div>`;
+    } else {
+      box.innerHTML=`<div style="font-size:2rem;margin-bottom:4px">📄</div>
+        <div style="font-weight:700">${file.name}</div>
+        <div style="font-size:.78rem;color:#666">${Math.round(file.size/1024)} KB</div>`;
+    }
+  }
+}
+
+function confirmUpload(){
+  if(stepsDone[sti])return;
+  const f=uploadedFiles[sti];
+  if(!f||!f.valid){return;}
+  f.confirmed=true;
+  handleResult(true,STATIONS[si].steps[sti].points);
+}
+
+function rejectUpload(){
+  uploadedFiles[sti]={valid:false};
+  const wrap=document.getElementById("img-confirm-wrap");
+  if(wrap) wrap.style.display="none";
+  const ufb=document.getElementById("upload-fb");
+  if(ufb) ufb.className="fb show err", ufb.innerHTML="Wähle eine neue Datei aus!";
+  const inp=document.getElementById("file-inp");
+  if(inp) inp.value="";
+}
+
+function submitUpload(){
+  // kept for compatibility, not used anymore
+}
+
+// ══════════════════════════════════════════════════════
+// RESULT
+// ══════════════════════════════════════════════════════
+function handleResult(ok,pts){
+  stepsDone[sti]=true;
+  const hintUsed=document.getElementById("hbox")&&document.getElementById("hbox").classList.contains("show");
+  const awarded=ok?(hintUsed?Math.round(pts*.6):pts):0;
+  if(ok) score+=awarded;
+  document.getElementById("scorenum").textContent=score;
+  const hbtn=document.getElementById("hbtn");
+  if(hbtn)hbtn.style.display="none";
+  setFb(ok, ok?`✅ Sehr gut! +${awarded} Punkte`:`❌ Leider nicht ganz richtig. Die korrekte Antwort siehst du oben.`);
+  setTimeout(()=>{sti++;renderStep();},ok?1800:3000);
+}
+
+function setFb(ok,msg){
+  const fb=document.getElementById("fb");
+  if(!fb)return;
+  fb.className="fb show "+(ok?"ok":"err");
+  fb.innerHTML=msg;
+}
+
+function showHint(){
+  const b=document.getElementById("hbox");
+  const btn=document.getElementById("hbtn");
+  if(b)b.classList.add("show");
+  if(btn)btn.style.display="none";
+  hints++;
+}
+
+function skipStep(){
+  if(stepsDone[sti])return;
+  stepsDone[sti]=true;
+  setFb(false,"⏭ Aufgabe übersprungen – keine Punkte.");
+  setTimeout(()=>{sti++;renderStep();},1200);
+}
+
+// ══════════════════════════════════════════════════════
+// STATION COMPLETE
+// ══════════════════════════════════════════════════════
+function completeStation(){
+  done++;
+  const s=STATIONS[si];
+  if(s.letter){
+    const letterStations=STATIONS.filter(st=>st.letter);
+    const pos=letterStations.indexOf(s);
+    if(pos>=0){
+      const box=document.getElementById("lb"+pos);
+      if(box){box.classList.remove("empty");box.classList.add("lit");}
+    }
+  }
+  si++;
+  setTimeout(()=>renderStation(),300);
+}
+
+// ══════════════════════════════════════════════════════
+// WIN
+// ══════════════════════════════════════════════════════
+function showWin(){
+  document.getElementById("s-game").style.display="none";
+  document.getElementById("s-win").style.display="block";
+  document.getElementById("wname").textContent=playerName+" – Mission erfüllt!";
+  document.getElementById("solword").textContent=SOLUTION;
+  document.getElementById("wst").textContent=done;
+  document.getElementById("wsp").textContent=score;
+  document.getElementById("wsh").textContent=hints;
+  window.scrollTo(0,0);
+}
+function restart(){
+  si=0;sti=0;score=0;hints=0;done=0;stepsDone={};uploadedFiles={};
+  document.getElementById("s-win").style.display="none";
+  document.getElementById("s-intro").style.display="block";
+  window.scrollTo(0,0);
+}
+function esc(s){return String(s).replace(/'/g,"\\'").replace(/"/g,"&quot;");}
+
+document.getElementById("s-intro").style.display="block";
+</script>
+</body>
+</html>
